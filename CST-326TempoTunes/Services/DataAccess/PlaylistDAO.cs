@@ -1,25 +1,24 @@
 ﻿using CST_326TempoTunes.Models;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace CST_326TempoTunes.Services.DataAccess
 {
     public class PlaylistDAO
     {
         // Update the connection string with your server, database, and credentials.
-        private readonly string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CST326Music;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
+        private readonly string connectionString = "server=localhost;port=3306;database=cst326-music;user=root;password=root;";
         public List<PlaylistModel> ReadAllPlaylist()
         {
             List<PlaylistModel> playlists = new List<PlaylistModel>();
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 // Query to fetch all playlists
                 string query = "SELECT Id, Name, ArtistName, ImageUrl FROM Playlist";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     conn.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -45,15 +44,15 @@ namespace CST_326TempoTunes.Services.DataAccess
         {
             List<TrackModel> tracks = new List<TrackModel>();
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 // Query to fetch tracks by PlaylistId
                 string query = "SELECT Id, Name, Artist, Duration FROM Track WHERE PlaylistId = @PlaylistId";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
                     conn.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -77,13 +76,13 @@ namespace CST_326TempoTunes.Services.DataAccess
         public List<TrackModel> ReadAllTracks()
         {
             var tracks = new List<TrackModel>();
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 string query = "SELECT Id, Name, Artist, Duration FROM Track";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     conn.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -101,23 +100,24 @@ namespace CST_326TempoTunes.Services.DataAccess
             }
             return tracks;
         }
-        // Method to remove a chosen playlist
+
+        // Method to remove a chosen playlist and its associated tracks
         public bool RemovePlaylist(int playlistId)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 // Remove related tracks first (if cascade delete is not enabled)
                 string deleteTracksQuery = "DELETE FROM Track WHERE PlaylistId = @PlaylistId";
                 string deletePlaylistQuery = "DELETE FROM Playlist WHERE Id = @PlaylistId";
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand(deleteTracksQuery, conn))
+                using (MySqlCommand cmd = new MySqlCommand(deleteTracksQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
                     cmd.ExecuteNonQuery();
                 }
 
-                using (SqlCommand cmd = new SqlCommand(deletePlaylistQuery, conn))
+                using (MySqlCommand cmd = new MySqlCommand(deletePlaylistQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
                     int affected = cmd.ExecuteNonQuery();
@@ -129,10 +129,10 @@ namespace CST_326TempoTunes.Services.DataAccess
         // Method to remove a chosen track
         public bool RemoveTrack(int trackId)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 string query = "DELETE FROM Track WHERE Id = @TrackId";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@TrackId", trackId);
                     conn.Open();
@@ -142,25 +142,26 @@ namespace CST_326TempoTunes.Services.DataAccess
             }
         }
 
+        // Method to add a new playlist and retrieve its generated ID
         public bool AddPlaylist(PlaylistModel playlist)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                // Append a SELECT to retrieve the new identity after the INSERT
+                // Use LAST_INSERT_ID() to get the auto-generated ID
                 string query = @"
-            INSERT INTO Playlist (Name, ArtistName, ImageUrl) 
-            VALUES (@Name, @ArtistName, @ImageUrl);
-            SELECT CAST(SCOPE_IDENTITY() AS int);";
+                    INSERT INTO Playlist (Name, ArtistName, ImageUrl) 
+                    VALUES (@Name, @ArtistName, @ImageUrl);
+                    SELECT LAST_INSERT_ID();";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Name", playlist.Name);
                     cmd.Parameters.AddWithValue("@ArtistName", playlist.ArtistName);
                     cmd.Parameters.AddWithValue("@ImageUrl", playlist.ImageUrl);
 
                     conn.Open();
-                    // ExecuteScalar returns the value from SELECT CAST(SCOPE_IDENTITY() AS int)
-                    int newId = (int)cmd.ExecuteScalar();
+                    // ExecuteScalar returns the value from SELECT LAST_INSERT_ID();
+                    int newId = Convert.ToInt32(cmd.ExecuteScalar());
 
                     // Assign the new id to your playlist object
                     playlist.Id = newId;
@@ -170,18 +171,18 @@ namespace CST_326TempoTunes.Services.DataAccess
             }
         }
 
-
+        // Method to add a new track and retrieve its generated ID
         public bool AddTrack(TrackModel track, int playlistId)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                // Include the SELECT to get the identity of the inserted track
+                // Use LAST_INSERT_ID() to get the auto-generated ID
                 string query = @"
-            INSERT INTO Track (Name, Artist, Duration, PlaylistId) 
-            VALUES (@Name, @Artist, @Duration, @PlaylistId);
-            SELECT CAST(SCOPE_IDENTITY() AS int);";
+                    INSERT INTO Track (Name, Artist, Duration, PlaylistId) 
+                    VALUES (@Name, @Artist, @Duration, @PlaylistId);
+                    SELECT LAST_INSERT_ID();";
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Name", track.Name);
                     cmd.Parameters.AddWithValue("@Artist", track.Artist);
@@ -189,7 +190,7 @@ namespace CST_326TempoTunes.Services.DataAccess
                     cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
 
                     conn.Open();
-                    int newId = (int)cmd.ExecuteScalar();
+                    int newId = Convert.ToInt32(cmd.ExecuteScalar());
 
                     // Update the track object with the new id
                     track.Id = newId;
@@ -198,7 +199,5 @@ namespace CST_326TempoTunes.Services.DataAccess
                 }
             }
         }
-
-
     }
 }

@@ -1,26 +1,25 @@
-﻿-- Drop tables if they exist (drop Track first because of the foreign key)
-IF OBJECT_ID('dbo.Track', 'U') IS NOT NULL
-    DROP TABLE dbo.Track;
-IF OBJECT_ID('dbo.Playlist', 'U') IS NOT NULL
-    DROP TABLE dbo.Playlist;
+-- Drop tables if they exist (drop Track first because of the foreign key)
+DROP TABLE IF EXISTS Track;
+DROP TABLE IF EXISTS Playlist;
 
 -- Create Playlist table
 CREATE TABLE Playlist (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(255) NOT NULL,
-    ArtistName NVARCHAR(255),
-    ImageUrl NVARCHAR(500)
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    ArtistName VARCHAR(255),
+    ImageUrl VARCHAR(500)
 );
 
 -- Create Track table with a foreign key to Playlist
 CREATE TABLE Track (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(255) NOT NULL,
-    Artist NVARCHAR(255),
-    Duration NVARCHAR(50),
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Artist VARCHAR(255),
+    Duration VARCHAR(50),
     PlaylistId INT,
     FOREIGN KEY (PlaylistId) REFERENCES Playlist(Id)
 );
+
 
 -------------------------
 -- Insert data into Playlist
