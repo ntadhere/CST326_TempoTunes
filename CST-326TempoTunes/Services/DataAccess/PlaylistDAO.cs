@@ -1,12 +1,13 @@
 ﻿using CST_326TempoTunes.Models;
 using MySql.Data.MySqlClient;
+using System.Configuration;
 
 namespace CST_326TempoTunes.Services.DataAccess
 {
     public class PlaylistDAO
     {
         // Update the connection string with your server, database, and credentials.
-        private readonly string connectionString = "server=localhost;port=3306;database=cst326-music;user=root;password=root;";
+        string connectionString = Configuration.GetConnectionString("DefaultConnection");
         public List<PlaylistModel> ReadAllPlaylist()
         {
             List<PlaylistModel> playlists = new List<PlaylistModel>();
