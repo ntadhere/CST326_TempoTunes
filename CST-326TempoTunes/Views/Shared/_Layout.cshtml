@@ -1,0 +1,70 @@
+﻿@using CST_326TempoTunes.Helpers  @* Include the namespace for our custom HTML helper extension method *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Link to Bootstrap and custom CSS files -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CST_326TempoTunes.styles.css" asp-append-version="true" />
+</head>
+<body class="@ViewData["BodyClass"]">
+    <header>
+        <!-- Navigation bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark transparent-navbar">
+            <div class="container-fluid">
+                <!-- Brand link: Clicking this takes you to the Home page -->
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"></a>
+                <!-- Toggle button for responsive/mobile view -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- Collapsible navbar content -->
+                <div class="collapse navbar-collapse" id="navbarColor03">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <!--
+                                Dynamically add the "active" class using the custom helper.
+                                If the current controller is "Home" and action is "Index", the "active" class is added.
+                            -->
+                            <a class="nav-link" style="background-color: #582ae3" asp-area="" asp-controller="Home" asp-action="Index">
+                                Home
+                                <span class="visually-hidden">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <!--
+                                Similarly, add "active" if the current page is the Playlists page.
+                                Adjust the controller and action names if needed.
+                            -->
+                            <a class="nav-link" style="background-color: #9cc83a" asp-area="" asp-controller="Home" asp-action="Playlist">
+                                Playlists
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <!-- Main content placeholder where child views are rendered -->
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted" s>
+        <div class="container">
+            &copy; 2025 - Tempo
+            Tunes
+        </div>
+    </footer>
+    <!-- Include JavaScript files -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

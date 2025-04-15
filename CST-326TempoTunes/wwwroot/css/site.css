@@ -1,0 +1,267 @@
+@font-face
+{
+    font-family: 'CoolFont';
+    src: url('/lib/fonts/ByteBounce.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html
+{
+    font-size: 14px;
+}
+
+@media (min-width: 768px)
+{
+    html
+    {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus
+{
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html
+{
+    position: relative;
+    min-height: 100%;
+}
+
+body
+{
+    margin-bottom: 60px;
+}
+
+.home-background
+{
+    background-image: url('/lib/img/homepage.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
+
+
+/* Background color for the playlist page */
+.playlist-background
+{
+    background-color: #9cc83a; /* or any color you want */
+    position: relative;
+    overflow-x: hidden;
+}
+.onePlaylist-background
+{
+    background-color: #008fff; /* or any color you want */
+    position: relative;
+    overflow-x: hidden;
+    color: white !important;
+}
+
+/* Sticky image that scrolls with you, stays at bottom */
+.sticky-footer-image
+{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+/*    max-height: 150px;
+    object-fit: cover;*/
+    z-index: -1; /* put behind other content */
+    pointer-events: none; /* so users can't interact with it */
+}
+
+
+
+
+/*.nav-item .active
+{
+    background-color: #008fff;
+    border: 0.3rem solid black;
+    border-radius: 0;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}*/
+
+/* Shared style for all nav links */
+.navbar .nav-link
+{
+    background-color: #582be3;
+    border: 0.3rem solid black;
+    border-radius: 0;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    color: white !important;
+    margin: 0 0.25rem;
+    transition: all 0.3s ease;
+}
+
+    /* Specific style for the active link */
+    .navbar .nav-link.active
+    {
+        background: #9cc83a !important;
+    }
+
+    .navbar .nav-link:hover
+    {
+        background-color: #0077dd;
+        text-decoration: none;
+    }
+
+h1
+{
+    font-family: 'CoolFont', sans-serif;
+    font-size: calc(5rem + 1.5vw);
+    color: white !important;
+}
+
+.card-img-top
+{
+    aspect-ratio: 1/1 !important;
+    object-fit: cover;
+    /*    border-top-left-radius: var(--bs-border-radius);
+    border-top-right-radius: var(--bs-border-radius);*/
+}
+
+.card
+{
+    box-shadow: none !important;
+    font-size: 0.8rem !important;
+    text-align: center !important;
+    background: transparent;
+}
+
+.card-title
+{
+    font-size: 1.2rem !important;
+}
+
+.container
+{
+    margin-top: 2rem !important;
+}
+
+.custom-tbody
+{
+    border-radius: 1rem;
+    box-shadow: inset 2px 2px 6px rgba(109, 114, 121, .5), inset -3px -2px 4px rgba(255, 255, 255, .2) !important;
+    height: 280px;
+    overflow-y: auto; /*scroll vertically*/
+}
+
+/* TRACK LIST TABLE ==========================*/
+/* Scrollable container with hidden scrollbar */
+.scrollable-table-container
+{
+    max-height: 300px;
+    overflow-y: scroll;
+    -ms-overflow-style: none; /* IE & Edge */
+    scrollbar-width: none; /* Firefox */
+    background-color: transparent;
+    border-radius: 12px;
+}
+
+    /* Hide scrollbar for WebKit browsers */
+    .scrollable-table-container::-webkit-scrollbar
+    {
+        display: none;
+    }
+
+/* White text and transparent rows */
+table.table-borderless tr td,
+table.table-borderless tr th
+{
+    background-color: transparent !important;
+    color: white;
+}
+
+/* Shadow effect */
+.shadowed-table
+{
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    background-color: transparent;
+    font-size: 1.2rem;
+}
+
+.table
+{
+    --bs-table-bg: none !important;
+    color: var(--bs-card-color) !important;
+}
+
+.table > :not(caption) > * > *
+{
+    color: var(--bs-card-color, var(--bs-table-color-type, var(--bs-card-color))); /*Change the color of track in container*/
+}
+
+/* CAROUSEL ============================================*/
+.custom-card
+{
+    background-color: #008fff;
+    border: 0.3rem solid black;
+    border-radius: 0;
+/*    transition: transform 0.2s;*/
+    color: white !important;
+}
+
+    .custom-carousel-card:hover
+    {
+        transform: scale(1.03);
+    }
+
+img
+{
+    border-bottom: 0.15rem solid black;
+}
+.card-body {
+    color: white !important;
+    padding: 2rem 1rem;
+}
+
+.btn
+{
+    background-color: #ff6938;
+    border-radius: 0;
+    border: 0.3rem solid black !important;
+    color: white;
+    margin: 0.25rem;
+    box-shadow: 5px 5px 10px rgba(55, 94, 148, .2), -5px -5px 10px rgba(255, 255, 255, .4);
+}
+.btn-pink
+{
+    background-color: #ff9ad4;
+}
+
+    .btn-pink:hover
+    {
+        background-color: #f5aed7 !important;
+        color: white;
+    }
+.btn:hover
+{
+    background-color: #ff8962;
+    color: white;
+}
+
+.custom-modal-style
+{
+    background-color: #582ae3;
+    color: #fff;
+    padding: 1rem 2rem;
+    border: 0.3rem solid black;
+    border-radius: 0;
+}
+    .custom-modal-style input, .form-select, .form-select::selection
+    {
+        border-radius: 0;
+        border: 0.3rem solid black;
+    }
+    .custom-modal-style h2
+    {
+        font-family: CoolFont, sans-serif;
+        font-size: calc(3rem + 1.5vw);
+        color: #ffdb06;
+    }
+
