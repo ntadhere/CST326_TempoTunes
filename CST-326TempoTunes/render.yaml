@@ -1,9 +1,8 @@
 services:
   - type: web
     name: tempo-tunes-app
-    env: dotnet
-    buildCommand: dotnet publish -c Release -o out
-    startCommand: dotnet out/YourApp.dll
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: CONNECTIONSTRINGS__DefaultConnection
         fromDatabase:
@@ -15,6 +14,6 @@ databases:
     databaseName: tempo_db
     user: tempo_user
     plan: free
-    ipAllowList: # Optional: allow external connections (e.g., from Azure or localhost)
+    ipAllowList:
       - source: 0.0.0.0/0
-        description: Allow all IPs (not recommended for production)
+        description: Allow all IPs (for development/testing)
