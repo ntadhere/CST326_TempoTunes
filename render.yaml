@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: tempo-tunes-app
+    env: dotnet
+    buildCommand: dotnet publish -c Release -o out
+    startCommand: dotnet out/YourApp.dll
+    envVars:
+      - key: CONNECTIONSTRINGS__DefaultConnection
+        fromDatabase:
+          name: tempo-tunes-db
+          property: connectionString
+
+databases:
+  - name: tempo-tunes-db
+    databaseName: tempo_db
+    user: tempo_user
+    plan: free
+    ipAllowList: # Optional: allow external connections (e.g., from Azure or localhost)
+      - source: 0.0.0.0/0
+        description: Allow all IPs (not recommended for production)
