@@ -4,6 +4,10 @@
 
 Take control of your music collection with TempoTunes’ sleek interface and powerful playlist tools—effortless creation, organization, and sharing, all wrapped in a beautiful, responsive design.
 
+## Live Demo
+
+Experience TempoTunes in action: [https://tempotunes-ezgxenenf5fnc4aj.westus-01.azurewebsites.net/](https://tempotunes-ezgxenenf5fnc4aj.westus-01.azurewebsites.net/)
+
 
 ## Features
 
