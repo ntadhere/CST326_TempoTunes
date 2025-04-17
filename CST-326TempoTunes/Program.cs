@@ -15,6 +15,9 @@ namespace CST_326TempoTunes
             // Register DAO and Service
             builder.Services.AddSingleton<PlaylistDAO>();
             builder.Services.AddSingleton<PlaylistCollection>();
+            builder.Services.AddSingleton<UserDAO>();       // one instance for the whole app
+            builder.Services.AddScoped<UserCollection>();
+
 
             var app = builder.Build();
 

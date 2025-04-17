@@ -1,0 +1,38 @@
+﻿@model CST_326TempoTunes.Models.LoginViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!-- Full‑height flexbox to center the login “panel” on the screen -->
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="custom-modal-style p-4 shadow rounded-4" style="min-width: 380px;">
+        <!-- ----------  Header  ---------- -->
+        <h2 class="w-100 text-center mb-3">Login</h2>
+
+        <!-- ----------  Validation summary  ---------- -->
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <!-- ----------  Form  ---------- -->
+        <form asp-action="Index"
+              asp-controller="Login"
+              method="post"
+              class="d-flex flex-column gap-3">
+
+            <input asp-for="Username"
+                   class="form-control"
+                   placeholder="Username"
+                   required />
+            <span asp-validation-for="Username" class="text-danger"></span>
+
+            <input asp-for="Password"
+                   class="form-control"
+                   type="password"
+                   placeholder="Password"
+                   required />
+            <span asp-validation-for="Password" class="text-danger"></span>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-pink">Login</button>
+                <a asp-controller="Home" asp-action="Index" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
