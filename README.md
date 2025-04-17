@@ -8,7 +8,7 @@ Take control of your music collection with TempoTunes’ sleek interface and pow
 
 Experience TempoTunes in action: [https://tempotunes-ezgxenenf5fnc4aj.westus-01.azurewebsites.net/](https://tempotunes-ezgxenenf5fnc4aj.westus-01.azurewebsites.net/)
 
-![TempoTunes Homepage](/Documents/img/homepage.png)
+![TempoTunes Homepage](./Documents/Img/homepage.png)
 
 ## Features
 
