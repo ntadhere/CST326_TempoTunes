@@ -31,7 +31,6 @@ html
 
 /* ――― Desktop (≥992 px) show all 5 cards; nothing to hide ――― */
 
-
 @media (min-width: 768px)
 {
     html
