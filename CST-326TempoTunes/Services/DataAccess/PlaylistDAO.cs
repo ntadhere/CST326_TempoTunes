@@ -8,23 +8,25 @@ namespace CST_326TempoTunes.Services.DataAccess
 {
     public class PlaylistDAO
     {
-        // 1. MongoDB connection string and database/collection names
-        private readonly string mongoConnectionString = "mongodb+srv://dorothy:cst326@tempotunes.fp9e8r3.mongodb.net/?retryWrites=true&w=majority&appName=TempoTunes";
-        private readonly string databaseName = "cst326";
-        private readonly string playlistCollectionName = "playlists";
-        private readonly string trackCollectionName = "tracks";
-
         private readonly IMongoCollection<PlaylistModel> playlists;
         private readonly IMongoCollection<TrackModel> tracks;
 
-        public PlaylistDAO()
+        public PlaylistDAO(IConfiguration config)
         {
-            // 2. Initialize Mongo client and get collections
-            var client = new MongoClient(mongoConnectionString);
-            var db = client.GetDatabase(databaseName);
-            playlists = db.GetCollection<PlaylistModel>(playlistCollectionName);
-            tracks = db.GetCollection<TrackModel>(trackCollectionName);
+            var connString = config.GetConnectionString("MONGO_CONNECTION");
+            if (string.IsNullOrWhiteSpace(connString))
+                throw new InvalidOperationException("Missing MongoConnection in configuration.");
+
+            var settings = MongoClientSettings.FromConnectionString(connString);
+            settings.AllowInsecureTls = true;              // for Azure cert trust (remove in prod)
+            settings.ServerSelectionTimeout = TimeSpan.FromSeconds(10);
+
+            var client = new MongoClient(settings);
+            var db = client.GetDatabase("cst326");
+            playlists = db.GetCollection<PlaylistModel>("playlists");
+            tracks = db.GetCollection<TrackModel>("tracks");
         }
+
 
         // 3. Read all playlists
         public List<PlaylistModel> ReadAllPlaylist()

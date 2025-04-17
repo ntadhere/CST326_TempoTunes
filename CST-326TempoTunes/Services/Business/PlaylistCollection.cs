@@ -6,55 +6,20 @@ namespace CST_326TempoTunes.Services.Business
 {
     public class PlaylistCollection
     {
-        private readonly PlaylistDAO playlistDAO;
+        private readonly PlaylistDAO dao;
 
-        public PlaylistCollection()
+        public PlaylistCollection(PlaylistDAO dao)
         {
-            // Instantiate the DAO
-            playlistDAO = new PlaylistDAO();
-        }
-
-        // This method is used by the controller to get all playlists.
-        public List<PlaylistModel> GetAllPlaylists()
-        {
-            return playlistDAO.ReadAllPlaylist();
+            this.dao = dao;
         }
 
-        // This method is used by the controller to get all tracks
-        public List<TrackModel> GetAllTracks()
-        {
-            return playlistDAO.ReadAllTracks();
-        }
-
-        // New method to retrieve tracks for a chosen playlist
-        public List<TrackModel> GetTracksForPlaylist(int playlistId)
-        {
-            return playlistDAO.ReadTracksForPlaylist(playlistId);
-        }
-        public bool RemovePlaylist(int playlistId)
-        {
-            return playlistDAO.RemovePlaylist(playlistId);
-        }
-
-        public bool RemoveTrack(int trackId)
-        {
-            return playlistDAO.RemoveTrack(trackId);
-        }
-        /// <summary>
-        /// Adds a new playlist to the database.
-        /// </summary>
-        public bool AddPlaylist(PlaylistModel playlist)
-        {
-            return playlistDAO.AddPlaylist(playlist);
-        }
-
-        /// <summary>
-        /// Adds a new track to the specified playlist.
-        /// </summary>
-        public bool AddTrack(TrackModel track, int playlistId)
-        {
-            return playlistDAO.AddTrack(track, playlistId);
-        }
+        public List<PlaylistModel> GetAllPlaylists() => dao.ReadAllPlaylist();
+        public List<TrackModel> GetAllTracks() => dao.ReadAllTracks();
+        public List<TrackModel> GetTracksForPlaylist(int id) => dao.ReadTracksForPlaylist(id);
+        public bool RemovePlaylist(int id) => dao.RemovePlaylist(id);
+        public bool RemoveTrack(int id) => dao.RemoveTrack(id);
+        public bool AddPlaylist(PlaylistModel m) => dao.AddPlaylist(m);
+        public bool AddTrack(TrackModel t, int pid) => dao.AddTrack(t, pid);
     }
 
 }

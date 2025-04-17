@@ -1,3 +1,6 @@
+using CST_326TempoTunes.Services.Business;
+using CST_326TempoTunes.Services.DataAccess;
+
 namespace CST_326TempoTunes
 {
     public class Program
@@ -8,6 +11,10 @@ namespace CST_326TempoTunes
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Register DAO and Service
+            builder.Services.AddSingleton<PlaylistDAO>();
+            builder.Services.AddSingleton<PlaylistCollection>();
 
             var app = builder.Build();
 

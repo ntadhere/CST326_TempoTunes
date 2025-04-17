@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "MONGO_CONNECTION": "mongodb+srv://dorothy:DevPassword@tempotunes.fp9e8r3.mongodb.net/?retryWrites=true&w=majority&appName=TempoTunes"
+  }
+}
