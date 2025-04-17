@@ -1,5 +1,6 @@
 #Tempo Tunes Music Management Platform
 ## Repository Structure
+```
 CST-326TempoTunes
 ├── Controllers
 │   └── HomeController.cs  <!-- Contains the logic for handling requests to the homepage and other views -->
@@ -40,3 +41,4 @@ CST-326TempoTunes
 ├── .gitattributes  <!-- Git attributes file, which defines how Git should treat certain file types or content in the repository -->
 ├── .gitignore  <!-- Specifies files and directories that Git should ignore, preventing them from being committed -->
 └── CST-326TempoTunes.sln  <!-- The Visual Studio solution file, which organizes the project and its dependencies -->
+```
