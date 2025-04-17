@@ -7,48 +7,45 @@
 }
 
     <h1 style="text-align:center; color: white;">TempoTunes</h1>
-
-    <!-- Carousel for Playlists -->
-    <div id="playlistCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            @{
-                var playlistList = Model.Playlists;
-                int chunkSize = 5;
-
-                for (int i = 0; i < playlistList.Count; i += chunkSize)
-                {
-                    var chunk = playlistList.Skip(i).Take(chunkSize);
-                    <div class="carousel-item @(i == 0 ? "active" : "")">
-                        <div class="row justify-content-center">
-                            @foreach (var playlist in chunk)
-                            {
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                                <div class="card text-center m-2 custom-card" style=" transition: transform 0.2s;">
-                                    <a asp-controller="Home" asp-action="OnePlaylist" asp-route-id="@playlist.Id" class="text-decoration-none">
-                                        <img src="@playlist.ImageUrl" class="card-img-top" alt="@playlist.Name" />
+<div id="playlistCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        @{
+            var chunkSize = 5;                       // keep 5‑per‑slide for desktop
+            for (int i = 0; i < Model.Playlists.Count; i += chunkSize)
+            {
+                var chunk = Model.Playlists.Skip(i).Take(chunkSize);
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                    <div class="row justify-content-center">
+                        @foreach (var p in chunk)
+                        {
+                            <div class="col-12 col-md-4 col-lg-2 playlist-card">
+                                <div class="card text-center m-2 custom-card" style="transition:transform .2s;">
+                                    <a asp-controller="Home" asp-action="OnePlaylist" asp-route-id="@p.Id"
+                                       class="text-decoration-none">
+                                        <img src="@p.ImageUrl" class="card-img-top" alt="@p.Name" />
                                         <div class="card-body">
-                                            <h6 class="card-title">@playlist.Name</h6>
-                                            <p class="card-text">@playlist.ArtistName</p>
+                                            <h6 class="card-title">@p.Name</h6>
+                                            <p class="card-text">@p.ArtistName</p>
                                         </div>
                                     </a>
                                 </div>
                             </div>
-                            }
-                        </div>
+                        }
                     </div>
-                }
+                </div>
             }
-        </div>
-
-        <button class="carousel-control-prev" type="button" data-bs-target="#playlistCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#playlistCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+        }
     </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#playlistCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#playlistCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
 
     <!-- Track List -->
 <!-- Scrollable table with transparent background and hidden scrollbar -->

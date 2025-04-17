@@ -5,27 +5,32 @@
     ViewData["BodyClass"] = "onePlaylist-background";
 }
 
-<div class="d-flex align-items-end mb-3">
-    <!-- Column 1: Image -->
-    <div class="flex-shrink-0">
-        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid" style="width: 15rem; aspect-ratio: 1/1;" />
-    </div>
+<div class="d-flex flex-column flex-md-row align-items-md-end gap-3 mb-3">
+    <!-- 1) Image -->
+    <img src="@Model.ImageUrl"
+         alt="@Model.Name"
+         class="img-fluid flex-shrink-0"
+         style="width:15rem;aspect-ratio:1/1;" />
 
-    <!-- Column 2: Playlist Details -->
-    <div class="flex-grow-1 ms-3">
-        <h1 class="text-white">@Model.Name</h1>
+    <!-- 2) Playlist details -->
+    <div class="flex-grow-1">
+        <h1 class="text-white mb-1">@Model.Name</h1>
         <h5 class="text-white">@Model.ArtistName</h5>
     </div>
 
-    <!-- Column 3: Button Group -->
-    <div class="flex-shrink-0 ms-3">
-        <div class="btn-group">
-            <button type="button" class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#addTrackModal">
-                Add Track
-            </button>
-        </div>
+    <!-- 3) Button group -->
+    <div class="flex-shrink-0">
+        <button type="button"
+                class="btn btn-pink w-100 w-md-auto"
+                data-bs-toggle="modal"
+                data-bs-target="#addTrackModal">
+            Add Track
+        </button>
     </div>
 </div>
+
+
+
 
 <h2 class="text-white">Track List</h2>
 

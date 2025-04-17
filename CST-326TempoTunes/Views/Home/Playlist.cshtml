@@ -6,20 +6,27 @@
 
 }
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="mb-0 text-white">Playlists</h1>
-        <div>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-left mb-3">
+    <h1 class="mb-0 text-white">Playlists</h1>
+    <div class="d-flex flex-column flex-md-row gap-2 mt-3 mt-md-0">
         <button type="button" class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#addPlaylistModal">Add playlist</button>
         <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deletePlaylistModal">Remove playlist</button>
-        </div>
     </div>
+</div>
 
-    <div class="row row-cols-1 row-cols-md-6 g-4">
-        @foreach (var playlist in Model)
-        {
+<div class="row
+     row-cols-2        <!-- 2 cards on phones (< 768 px)        -->
+            row-cols-md-4     <!-- 4 cards on tablets / iPad (≥ 768 px) -->
+            row-cols-lg-6     <!-- 6 cards on laptops / desktop (≥ 992 px) -->
+            g-4">
+    @foreach (var playlist in Model)
+    {
             <div class="col">
                 <div class="card custom-card">
-                    <a asp-controller="Home" asp-action="OnePlaylist" asp-route-id="@playlist.Id" class="text-decoration-none">
+                    <a asp-controller="Home"
+                       asp-action="OnePlaylist"
+                       asp-route-id="@playlist.Id"
+                       class="text-decoration-none">
                         <img src="@playlist.ImageUrl" class="card-img-top" alt="@playlist.Name">
                         <div class="card-body">
                             <h5 class="card-title">@playlist.Name</h5>
@@ -28,8 +35,9 @@
                     </a>
                 </div>
             </div>
-        }
-    </div>
+    }
+</div>
+
 
 <!-- Remove Playlist Modal -->
 <div class="modal fade" id="deletePlaylistModal" tabindex="-1"
