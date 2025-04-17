@@ -1,203 +1,83 @@
-﻿using CST_326TempoTunes.Models;
-using MySql.Data.MySqlClient;
+﻿using System.Collections.Generic;
+using CST_326TempoTunes.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 
 namespace CST_326TempoTunes.Services.DataAccess
 {
     public class PlaylistDAO
     {
-        // Update the connection string with your server, database, and credentials.
-        private readonly string connectionString = "server=localhost;port=3306;database=cst326-music;user=root;password=root;";
+        // 1. MongoDB connection string and database/collection names
+        private readonly string mongoConnectionString = "mongodb+srv://dorothy:cst326@tempotunes.fp9e8r3.mongodb.net/?retryWrites=true&w=majority&appName=TempoTunes";
+        private readonly string databaseName = "cst326";
+        private readonly string playlistCollectionName = "playlists";
+        private readonly string trackCollectionName = "tracks";
+
+        private readonly IMongoCollection<PlaylistModel> playlists;
+        private readonly IMongoCollection<TrackModel> tracks;
+
+        public PlaylistDAO()
+        {
+            // 2. Initialize Mongo client and get collections
+            var client = new MongoClient(mongoConnectionString);
+            var db = client.GetDatabase(databaseName);
+            playlists = db.GetCollection<PlaylistModel>(playlistCollectionName);
+            tracks = db.GetCollection<TrackModel>(trackCollectionName);
+        }
+
+        // 3. Read all playlists
         public List<PlaylistModel> ReadAllPlaylist()
         {
-            List<PlaylistModel> playlists = new List<PlaylistModel>();
-
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                // Query to fetch all playlists
-                string query = "SELECT Id, Name, ArtistName, ImageUrl FROM Playlist";
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    conn.Open();
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            PlaylistModel playlist = new PlaylistModel
-                            {
-                                Id = Convert.ToInt32(reader["Id"]),
-                                Name = reader["Name"].ToString(),
-                                ArtistName = reader["ArtistName"].ToString(),
-                                ImageUrl = reader["ImageUrl"].ToString()
-                            };
-
-                            playlists.Add(playlist);
-                        }
-                    }
-                }
-            }
-
-            return playlists;
+            return playlists.Find(FilterDefinition<PlaylistModel>.Empty)
+                            .ToList();
         }
 
-        // New method to read all tracks for a given playlist
+        // 4. Read all tracks for a given playlist
         public List<TrackModel> ReadTracksForPlaylist(int playlistId)
         {
-            List<TrackModel> tracks = new List<TrackModel>();
-
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                // Query to fetch tracks by PlaylistId
-                string query = "SELECT Id, Name, Artist, Duration FROM Track WHERE PlaylistId = @PlaylistId";
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
-                    conn.Open();
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            TrackModel track = new TrackModel
-                            {
-                                Id = Convert.ToInt32(reader["Id"]),
-                                Name = reader["Name"].ToString(),
-                                Artist = reader["Artist"].ToString(),
-                                Duration = reader["Duration"].ToString()
-                            };
-                            tracks.Add(track);
-                        }
-                    }
-                }
-            }
-
-            return tracks;
+            return tracks.Find(t => t.PlaylistId == playlistId)
+                         .ToList();
         }
 
-        // Read all the tracks in the database
+        // 5. Read all tracks in the DB
         public List<TrackModel> ReadAllTracks()
         {
-            var tracks = new List<TrackModel>();
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                string query = "SELECT Id, Name, Artist, Duration FROM Track";
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    conn.Open();
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var track = new TrackModel
-                            {
-                                Id = Convert.ToInt32(reader["Id"]),
-                                Name = reader["Name"].ToString(),
-                                Artist = reader["Artist"].ToString(),
-                                Duration = reader["Duration"].ToString()
-                            };
-                            tracks.Add(track);
-                        }
-                    }
-                }
-            }
-            return tracks;
+            return tracks.Find(FilterDefinition<TrackModel>.Empty)
+                         .ToList();
         }
 
-        // Method to remove a chosen playlist and its associated tracks
+        // 6. Remove a playlist (and its tracks)
         public bool RemovePlaylist(int playlistId)
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                // Remove related tracks first (if cascade delete is not enabled)
-                string deleteTracksQuery = "DELETE FROM Track WHERE PlaylistId = @PlaylistId";
-                string deletePlaylistQuery = "DELETE FROM Playlist WHERE Id = @PlaylistId";
-                conn.Open();
-
-                using (MySqlCommand cmd = new MySqlCommand(deleteTracksQuery, conn))
-                {
-                    cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
-                    cmd.ExecuteNonQuery();
-                }
-
-                using (MySqlCommand cmd = new MySqlCommand(deletePlaylistQuery, conn))
-                {
-                    cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
-                    int affected = cmd.ExecuteNonQuery();
-                    return affected > 0;
-                }
-            }
+            // Delete tracks first
+            var deleteTracksResult = tracks.DeleteMany(t => t.PlaylistId == playlistId);
+            // Then delete the playlist
+            var deletePlaylistResult = playlists.DeleteOne(p => p.Id == playlistId);
+            return deletePlaylistResult.DeletedCount > 0;
         }
 
-        // Method to remove a chosen track
+        // 7. Remove a single track
         public bool RemoveTrack(int trackId)
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                string query = "DELETE FROM Track WHERE Id = @TrackId";
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@TrackId", trackId);
-                    conn.Open();
-                    int affected = cmd.ExecuteNonQuery();
-                    return affected > 0;
-                }
-            }
+            var result = tracks.DeleteOne(t => t.Id == trackId);
+            return result.DeletedCount > 0;
         }
 
-        // Method to add a new playlist and retrieve its generated ID
+        // 8. Add a new playlist and capture the generated Id
         public bool AddPlaylist(PlaylistModel playlist)
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                // Use LAST_INSERT_ID() to get the auto-generated ID
-                string query = @"
-                    INSERT INTO Playlist (Name, ArtistName, ImageUrl) 
-                    VALUES (@Name, @ArtistName, @ImageUrl);
-                    SELECT LAST_INSERT_ID();";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Name", playlist.Name);
-                    cmd.Parameters.AddWithValue("@ArtistName", playlist.ArtistName);
-                    cmd.Parameters.AddWithValue("@ImageUrl", playlist.ImageUrl);
-
-                    conn.Open();
-                    // ExecuteScalar returns the value from SELECT LAST_INSERT_ID();
-                    int newId = Convert.ToInt32(cmd.ExecuteScalar());
-
-                    // Assign the new id to your playlist object
-                    playlist.Id = newId;
-
-                    return newId > 0;
-                }
-            }
+            // In MongoDB, unless you set Id yourself, it will be generated.
+            playlists.InsertOne(playlist);
+            return playlist.Id != 0;
         }
 
-        // Method to add a new track and retrieve its generated ID
+        // 9. Add a new track to a playlist
         public bool AddTrack(TrackModel track, int playlistId)
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                // Use LAST_INSERT_ID() to get the auto-generated ID
-                string query = @"
-                    INSERT INTO Track (Name, Artist, Duration, PlaylistId) 
-                    VALUES (@Name, @Artist, @Duration, @PlaylistId);
-                    SELECT LAST_INSERT_ID();";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Name", track.Name);
-                    cmd.Parameters.AddWithValue("@Artist", track.Artist);
-                    cmd.Parameters.AddWithValue("@Duration", track.Duration);
-                    cmd.Parameters.AddWithValue("@PlaylistId", playlistId);
-
-                    conn.Open();
-                    int newId = Convert.ToInt32(cmd.ExecuteScalar());
-
-                    // Update the track object with the new id
-                    track.Id = newId;
-
-                    return newId > 0;
-                }
-            }
+            track.PlaylistId = playlistId;
+            tracks.InsertOne(track);
+            return track.Id != 0;
         }
     }
 }
