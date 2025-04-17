@@ -62,6 +62,7 @@ body
     background-position: center;
     background-repeat: no-repeat;
     min-height: 100vh;
+    background-color: #582ae3;
 }
 
 
@@ -79,22 +80,35 @@ body
     overflow-x: hidden;
     color: white !important;
 }
+.login-background
+{
+    background-color: #ff9ad4; /* or any color you want */
+    position: relative;
+    overflow-x: hidden;
+    color: white !important;
+}
 
-/* Sticky image that scrolls with you, stays at bottom */
+/* existing desktop / tablet behaviour – image sits bottom‑right and grows by width */
 .sticky-footer-image
 {
     position: fixed;
+    right: 0;
     bottom: 0;
-    left: 0;
-    width: 100%;
-/*    max-height: 150px;
-    object-fit: cover;*/
-    z-index: -1; /* put behind other content */
-    pointer-events: none; /* so users can't interact with it */
+    max-width: 100%;
+    height: auto;
+    z-index: -1; /* stays behind the content */
 }
 
-
-
+/* ----------  phones ( < 576 px ) – make it fill the height  ---------- */
+@media (max-width: 575.98px)
+{
+    .sticky-footer-image
+    {
+        width: auto; /* let height drive the sizing */
+        height: 100vh; /* fill the full viewport height */
+        object-fit: cover;
+    }
+}
 
 /*.nav-item .active
 {
@@ -104,9 +118,8 @@ body
     padding-left: 2rem !important;
     padding-right: 2rem !important;
 }*/
-
-/* Shared style for all nav links */
-.navbar .nav-link
+        /* Shared style for all nav links */
+        .navbar .nav-link
 {
     background-color: #582be3;
     border: 0.3rem solid black;
@@ -285,4 +298,30 @@ img
         font-size: calc(3rem + 1.5vw);
         color: #ffdb06;
     }
+
+
+/*LOGIN=====================*/
+/* Wrapper always fills the viewport */
+.login-wrapper
+{
+    width: 100%;
+    padding: 1rem; /* small gutter so the panel isn't glued to the edge on phones */
+}
+
+/* Panel width rules */
+.login-panel
+{
+    width: 100%; /* phones: full width */
+    max-width: 420px; /* tablets & up: cap width so it doesn't sprawl */
+    background: #2308ff; /* keep your existing custom-modal-style colours */
+}
+
+/* Optional: finer tweak for very tall screens so panel isn't too low */
+@media (min-height: 900px)
+{
+    .login-wrapper
+    {
+        min-height: 90vh; /* keeps footer art visible */
+    }
+}
 

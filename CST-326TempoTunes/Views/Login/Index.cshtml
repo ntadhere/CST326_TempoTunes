@@ -1,38 +1,36 @@
 ﻿@model CST_326TempoTunes.Models.LoginViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-<!-- Full‑height flexbox to center the login “panel” on the screen -->
-<div class="d-flex justify-content-center align-items-center min-vh-100">
-    <div class="custom-modal-style p-4 shadow rounded-4" style="min-width: 380px;">
-        <!-- ----------  Header  ---------- -->
-        <h2 class="w-100 text-center mb-3">Login</h2>
+@{
+    ViewData["Title"] = "Login";
+    ViewData["BodyClass"] = "login-background";
+}
 
-        <!-- ----------  Validation summary  ---------- -->
-        <div asp-validation-summary="All" class="text-danger"></div>
+<div class="login-wrapper d-flex align-items-start justify-content-center min-vh-100">
+    <div class="login-panel custom-modal-style shadow p-4">
+        <h2 class="mb-4">Login</h2>
 
-        <!-- ----------  Form  ---------- -->
+        <div asp-validation-summary="All" class="text-danger small"></div>
+
         <form asp-action="Index"
               asp-controller="Login"
               method="post"
-              class="d-flex flex-column gap-3">
+              class="d-grid gap-3">
 
-            <input asp-for="Username"
-                   class="form-control"
-                   placeholder="Username"
-                   required />
-            <span asp-validation-for="Username" class="text-danger"></span>
+            <input asp-for="Username" class="form-control" placeholder="Username" required />
+            <span asp-validation-for="Username" class="text-danger small"></span>
 
-            <input asp-for="Password"
-                   class="form-control"
-                   type="password"
-                   placeholder="Password"
-                   required />
-            <span asp-validation-for="Password" class="text-danger"></span>
+            <input asp-for="Password" class="form-control" placeholder="Password" type="password" required />
+            <span asp-validation-for="Password" class="text-danger small"></span>
 
-            <div class="text-end">
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-pink">Login</button>
-                <a asp-controller="Home" asp-action="Index" class="btn">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+
+<img src="/lib/img/login.png"
+     alt="Decorative playlist footer"
+     class="sticky-footer-image" />
