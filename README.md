@@ -1,16 +1,16 @@
-# Tempo Tunes Music Management Platform
+# Tempo Tunes Music Management Platform 🎶✨
 
 ## Managing Your Music Platform Has Never Been Easier—or Prettier
 
 Take control of your music collection with TempoTunes’ sleek interface and powerful playlist tools—effortless creation, organization, and sharing, all wrapped in a beautiful, responsive design.
 
-## Live Demo
+## Live Demo 🌐
 
 Experience TempoTunes in action: [https://tempotunes-ezgxenenf5fnc4aj.westus-01.azurewebsites.net/](https://tempotunes-ezgxenenf5fnc4aj.westus-01.azurewebsites.net/)
 
 ![TempoTunes Homepage](./Documents/Img/homepage.png)
 
-## Features
+## Features ⭐️
 
 - **Playlist Management**: Create, and delete playlists with custom cover images  
 - **Track Management**: Add, view, and remove tracks within playlists—specify title, artist, and duration  
@@ -23,7 +23,7 @@ Experience TempoTunes in action: [https://tempotunes-ezgxenenf5fnc4aj.westus-01.
 - **N‑Layer Architecture**: Clear separation between Controller → Service (Business) → DAO (DataAccess) layers, wired via dependency injection  
 - **Azure‑Ready Configuration**: Environment‑driven settings and connection strings for seamless deployment to Azure App Service  
 
-## Repository Structure
+## Repository Structure 🌳
 ```
 CST-326TempoTunes/
 ├── Controllers/                # Contains controller classes
