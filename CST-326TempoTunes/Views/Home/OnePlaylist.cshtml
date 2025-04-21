@@ -29,7 +29,8 @@
             </button>
             <button class="btn btn-secondary"
                     data-bs-toggle="modal"
-                    data-bs-target="#editPlaylistModal">
+                    data-bs-target="#editPlaylistModal"
+                    style="background-color: #ffdb06; color: black;">
                 Edit Playlist
             </button>
         </div>
@@ -54,9 +55,9 @@
                     <td>@track.Name</td>
                     <td>@track.Artist</td>
                     <td>@track.Duration</td>
-                    <td>
-                        @if (User.Identity?.IsAuthenticated ?? false)
-                        {
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <td>
                             <button class="btn btn-sm btn-outline-light me-2"
                                     data-bs-toggle="modal"
                                     data-bs-target="#editTrackModal-@track.Id" 
@@ -72,8 +73,9 @@
                                 <input type="hidden" name="playlistId" value="@Model.Id" />
                                 <button type="submit" class="btn btn-sm">Remove</button>
                             </form>
-                        }
-                    </td>
+                        
+                        </td>
+                    }
                 </tr>
             }
         </tbody>
