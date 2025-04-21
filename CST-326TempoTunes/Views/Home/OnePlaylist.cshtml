@@ -1,20 +1,37 @@
 ﻿@model CST_326TempoTunes.Models.PlaylistModel
+
 @{
     ViewData["Title"] = "OnePlaylist";
     ViewData["BodyClass"] = "onePlaylist-background";
 }
 
 <div class="d-flex flex-column flex-md-row align-items-md-end gap-3 mb-3">
-    <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid flex-shrink-0" style="width:15rem;aspect-ratio:1/1;" />
+    <!-- Image -->
+    <img src="@Model.ImageUrl"
+         alt="@Model.Name"
+         class="img-fluid flex-shrink-0"
+         style="width:15rem;aspect-ratio:1/1;" />
+
+    <!-- Details -->
     <div class="flex-grow-1">
         <h1 class="text-white mb-1">@Model.Name</h1>
         <h5 class="text-white">@Model.ArtistName</h5>
     </div>
+
+    <!-- Actions -->
     @if (User.Identity?.IsAuthenticated ?? false)
     {
         <div class="flex-shrink-0 d-flex gap-2">
-            <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#addTrackModal">Add Track</button>
-            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editPlaylistModal">Edit Playlist</button>
+            <button class="btn btn-pink"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addTrackModal">
+                Add Track
+            </button>
+            <button class="btn btn-secondary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editPlaylistModal">
+                Edit Playlist
+            </button>
         </div>
     }
 </div>
@@ -23,7 +40,12 @@
 <div class="scrollable-table-container shadowed-table">
     <table class="table table-borderless text-white">
         <thead>
-            <tr><th>Track</th><th>Artist</th><th>Duration</th><th>Action</th></tr>
+            <tr>
+                <th>Track</th>
+                <th>Artist</th>
+                <th>Duration</th>
+                <th>Action</th>
+            </tr>
         </thead>
         <tbody>
             @foreach (var track in Model.Tracks)
@@ -35,8 +57,16 @@
                     <td>
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            <button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#editTrackModal-@track.Id">Edit</button>
-                            <form asp-action="RemoveTrack" asp-controller="Home" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-outline-light me-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editTrackModal-@track.Id">
+                                Edit
+                            </button>
+                            <form asp-action="RemoveTrack"
+                                  asp-controller="Home"
+                                  method="post"
+                                  class="d-inline">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="trackId" value="@track.Id" />
                                 <input type="hidden" name="playlistId" value="@Model.Id" />
                                 <button type="submit" class="btn btn-sm">Remove</button>
@@ -52,15 +82,19 @@
 @if (User.Identity?.IsAuthenticated ?? false)
 {
     <!-- Add Track Modal -->
-    <div class="modal fade" id="addTrackModal" tabindex="-1" aria-labelledby="addTrackModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addTrackModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-style">
                 <div class="modal-header">
-                    <h2 class="modal-title w-100 text-center" id="addTrackModalLabel" style="color: #ffd44f; font-weight:bold;">Add Track</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h2 class="modal-title w-100 text-center">Add Track</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form asp-action="AddTrack" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                    <form asp-action="AddTrack"
+                          asp-controller="Home"
+                          method="post"
+                          class="d-flex flex-column gap-3">
+                        @Html.AntiForgeryToken()
                         <input type="text" name="Name" class="form-control" placeholder="Track Name" required />
                         <input type="text" name="Artist" class="form-control" placeholder="Artist Name" required />
                         <input type="text" name="Duration" class="form-control" placeholder="Duration (e.g. 3:45)" required />
@@ -76,15 +110,19 @@
     </div>
 
     <!-- Edit Playlist Modal -->
-    <div class="modal fade" id="editPlaylistModal" tabindex="-1" aria-labelledby="editPlaylistModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editPlaylistModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-style">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editPlaylistModalLabel">Edit Playlist</h5>
+                    <h5 class="modal-title">Edit Playlist</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form asp-action="EditPlaylist" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                    <form asp-action="EditPlaylist"
+                          asp-controller="Home"
+                          method="post"
+                          class="d-flex flex-column gap-3">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="Id" value="@Model.Id" />
                         <input type="text" name="Name" value="@Model.Name" class="form-control" required />
                         <input type="text" name="ArtistName" value="@Model.ArtistName" class="form-control" required />
@@ -102,15 +140,19 @@
     <!-- Edit Track Modals -->
     @foreach (var t in Model.Tracks)
     {
-        <div class="modal fade" id="editTrackModal-@t.Id" tabindex="-1" aria-labelledby="editTrackModalLabel-@t.Id" aria-hidden="true">
+        <div class="modal fade" id="editTrackModal-@t.Id" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content custom-modal-style">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editTrackModalLabel-@t.Id">Edit Track</h5>
+                        <h5 class="modal-title">Edit Track</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form asp-action="EditTrack" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                        <form asp-action="EditTrack"
+                              asp-controller="Home"
+                              method="post"
+                              class="d-flex flex-column gap-3">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="Id" value="@t.Id" />
                             <input type="hidden" name="playlistId" value="@Model.Id" />
                             <input type="text" name="Name" value="@t.Name" class="form-control" required />
@@ -128,4 +170,6 @@
     }
 }
 
-<img src="/lib/img/onePlaylist.png" alt="Decorative playlist footer" class="sticky-footer-image" />
+<img src="/lib/img/onePlaylist.png"
+     alt="Decorative playlist footer"
+     class="sticky-footer-image" />

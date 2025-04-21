@@ -71,6 +71,32 @@ namespace CST_326TempoTunes.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditPlaylist(PlaylistModel vm)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Playlist");  // Or return view with errors
+
+            bool ok = _playlistService.UpdatePlaylist(vm);
+            TempData["Message"] = ok ? "Playlist updated." : "Update failed.";
+            return RedirectToAction("Playlist");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditTrack(TrackModel vm, int playlistId)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("OnePlaylist", new { id = playlistId });
+
+            vm.PlaylistId = playlistId;
+            bool ok = _playlistService.UpdateTrack(vm);
+            TempData["Message"] = ok ? "Track updated." : "Update failed.";
+            return RedirectToAction("OnePlaylist", new { id = playlistId });
+        }
+
+
+        [HttpPost]
         public IActionResult RemovePlaylist(int id)
         {
             if (_playlistService.RemovePlaylist(id))

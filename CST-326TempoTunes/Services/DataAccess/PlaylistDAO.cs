@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CST_326TempoTunes.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
 namespace CST_326TempoTunes.Services.DataAccess
@@ -27,36 +27,30 @@ namespace CST_326TempoTunes.Services.DataAccess
             tracks = db.GetCollection<TrackModel>("tracks");
         }
 
-
         // 3. Read all playlists
         public List<PlaylistModel> ReadAllPlaylist()
         {
-            return playlists.Find(FilterDefinition<PlaylistModel>.Empty)
-                            .ToList();
+            return playlists.Find(FilterDefinition<PlaylistModel>.Empty).ToList();
         }
 
         // 4. Read all tracks for a given playlist
         public List<TrackModel> ReadTracksForPlaylist(int playlistId)
         {
-            return tracks.Find(t => t.PlaylistId == playlistId)
-                         .ToList();
+            return tracks.Find(t => t.PlaylistId == playlistId).ToList();
         }
 
         // 5. Read all tracks in the DB
         public List<TrackModel> ReadAllTracks()
         {
-            return tracks.Find(FilterDefinition<TrackModel>.Empty)
-                         .ToList();
+            return tracks.Find(FilterDefinition<TrackModel>.Empty).ToList();
         }
 
         // 6. Remove a playlist (and its tracks)
         public bool RemovePlaylist(int playlistId)
         {
-            // Delete tracks first
-            var deleteTracksResult = tracks.DeleteMany(t => t.PlaylistId == playlistId);
-            // Then delete the playlist
-            var deletePlaylistResult = playlists.DeleteOne(p => p.Id == playlistId);
-            return deletePlaylistResult.DeletedCount > 0;
+            tracks.DeleteMany(t => t.PlaylistId == playlistId);
+            var result = playlists.DeleteOne(p => p.Id == playlistId);
+            return result.DeletedCount > 0;
         }
 
         // 7. Remove a single track
@@ -66,10 +60,12 @@ namespace CST_326TempoTunes.Services.DataAccess
             return result.DeletedCount > 0;
         }
 
-        // 8. Add a new playlist and capture the generated Id
+        // 8. Add a new playlist and capture a unique Id
         public bool AddPlaylist(PlaylistModel playlist)
         {
-            // In MongoDB, unless you set Id yourself, it will be generated.
+            if (playlist.Id == 0)
+                playlist.Id = GetNextPlaylistId();
+
             playlists.InsertOne(playlist);
             return playlist.Id != 0;
         }
@@ -77,13 +73,15 @@ namespace CST_326TempoTunes.Services.DataAccess
         // 9. Add a new track to a playlist
         public bool AddTrack(TrackModel track, int playlistId)
         {
+            if (track.Id == 0)
+                track.Id = GetNextTrackId();
+
             track.PlaylistId = playlistId;
             tracks.InsertOne(track);
             return track.Id != 0;
         }
-        /// <summary>
-        /// Updates an existing playlist document by numeric Id.
-        /// </summary>
+
+        // 10. Update playlist
         public bool UpdatePlaylist(PlaylistModel playlist)
         {
             var filter = Builders<PlaylistModel>.Filter.Eq(p => p.Id, playlist.Id);
@@ -91,9 +89,7 @@ namespace CST_326TempoTunes.Services.DataAccess
             return result.ModifiedCount > 0;
         }
 
-        /// <summary>
-        /// Updates an existing track document by numeric Id.
-        /// </summary>
+        // 11. Update track
         public bool UpdateTrack(TrackModel track)
         {
             var filter = Builders<TrackModel>.Filter.Eq(t => t.Id, track.Id);
@@ -101,5 +97,23 @@ namespace CST_326TempoTunes.Services.DataAccess
             return result.ModifiedCount > 0;
         }
 
+        // Helpers for auto-increment
+        private int GetNextPlaylistId()
+        {
+            var sort = Builders<PlaylistModel>.Sort.Descending(p => p.Id);
+            var last = playlists.Find(FilterDefinition<PlaylistModel>.Empty)
+                                .Sort(sort)
+                                .FirstOrDefault();
+            return (last?.Id ?? 0) + 1;
+        }
+
+        private int GetNextTrackId()
+        {
+            var sort = Builders<TrackModel>.Sort.Descending(t => t.Id);
+            var last = tracks.Find(FilterDefinition<TrackModel>.Empty)
+                             .Sort(sort)
+                             .FirstOrDefault();
+            return (last?.Id ?? 0) + 1;
+        }
     }
 }

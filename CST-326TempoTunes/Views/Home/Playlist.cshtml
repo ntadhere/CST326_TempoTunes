@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<CST_326TempoTunes.Models.PlaylistModel>
+
 @{
     ViewData["Title"] = "Playlist";
     ViewData["BodyClass"] = "playlist-background";
@@ -6,11 +7,22 @@
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-left mb-3">
     <h1 class="mb-0 text-white">Playlists</h1>
+
     @if (User.Identity?.IsAuthenticated ?? false)
     {
         <div class="d-flex flex-column flex-md-row gap-2 mt-3 mt-md-0">
-            <button type="button" class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#addPlaylistModal">Add playlist</button>
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deletePlaylistModal">Remove playlist</button>
+            <button type="button"
+                    class="btn btn-pink"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addPlaylistModal">
+                Add playlist
+            </button>
+            <button type="button"
+                    class="btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deletePlaylistModal">
+                Remove playlist
+            </button>
         </div>
     }
 </div>
@@ -24,7 +36,9 @@
                    asp-action="OnePlaylist"
                    asp-route-id="@playlist.Id"
                    class="text-decoration-none">
-                    <img src="@playlist.ImageUrl" class="card-img-top" alt="@playlist.Name" />
+                    <img src="@playlist.ImageUrl"
+                         class="card-img-top"
+                         alt="@playlist.Name">
                     <div class="card-body">
                         <h5 class="card-title">@playlist.Name</h5>
                         <p class="card-text">@playlist.ArtistName</p>
@@ -48,15 +62,19 @@
 @if (User.Identity?.IsAuthenticated ?? false)
 {
     <!-- Add Playlist Modal -->
-    <div class="modal fade" id="addPlaylistModal" tabindex="-1" aria-labelledby="addPlaylistModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addPlaylistModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-style">
                 <div class="modal-header">
-                    <h2 class="modal-title w-100 text-center" id="addPlaylistModalLabel">Add Playlist</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h2 class="modal-title w-100 text-center">Add Playlist</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form asp-action="AddPlaylist" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                    <form asp-action="AddPlaylist"
+                          asp-controller="Home"
+                          method="post"
+                          class="d-flex flex-column gap-3">
+                        @Html.AntiForgeryToken()
                         <input type="text" name="Name" class="form-control" placeholder="Playlist Name" required />
                         <input type="text" name="ArtistName" class="form-control" placeholder="Artist Name" required />
                         <input type="text" name="ImageUrl" class="form-control" placeholder="Image URL" required />
@@ -71,15 +89,19 @@
     </div>
 
     <!-- Remove Playlist Modal -->
-    <div class="modal fade" id="deletePlaylistModal" tabindex="-1" aria-labelledby="deletePlaylistModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deletePlaylistModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-style">
                 <div class="modal-header">
-                    <h2 class="modal-title w-100 text-center" id="deletePlaylistModalLabel">Delete Playlist</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h2 class="modal-title w-100 text-center">Delete Playlist</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form asp-action="RemovePlaylist" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                    <form asp-action="RemovePlaylist"
+                          asp-controller="Home"
+                          method="post"
+                          class="d-flex flex-column gap-3">
+                        @Html.AntiForgeryToken()
                         <label for="playlistId" class="form-label text-white">Select Playlist</label>
                         <select id="playlistId" name="id" class="form-select">
                             @foreach (var p in Model)
@@ -100,22 +122,26 @@
     <!-- Edit Playlist Modals -->
     @foreach (var p in Model)
     {
-        <div class="modal fade" id="editPlaylistModal-@p.Id" tabindex="-1" aria-labelledby="editPlaylistModalLabel-@p.Id" aria-hidden="true">
+        <div class="modal fade" id="editPlaylistModal-@p.Id" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content custom-modal-style">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editPlaylistModalLabel-@p.Id">Edit Playlist</h5>
+                        <h5 class="modal-title">Edit Playlist</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form asp-action="EditPlaylist" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                        <form asp-action="EditPlaylist"
+                              asp-controller="Home"
+                              method="post"
+                              class="d-flex flex-column gap-3">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="Id" value="@p.Id" />
                             <input type="text" name="Name" value="@p.Name" class="form-control" placeholder="Playlist Name" required />
                             <input type="text" name="ArtistName" value="@p.ArtistName" class="form-control" placeholder="Artist Name" required />
                             <input type="text" name="ImageUrl" value="@p.ImageUrl" class="form-control" placeholder="Image URL" required />
                             <div class="text-end">
                                 <button type="submit" class="btn btn-pink">Save</button>
-                                <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -125,4 +151,6 @@
     }
 }
 
-<img src="/lib/img/list_of_playlist.png" alt="Decorative playlist footer" class="sticky-footer-image" />
+<img src="/lib/img/list_of_playlist.png"
+     alt="Decorative playlist footer"
+     class="sticky-footer-image" />
