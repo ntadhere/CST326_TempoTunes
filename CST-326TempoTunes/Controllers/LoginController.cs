@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using CST_326TempoTunes.Models;
 using CST_326TempoTunes.Services.Business;
-using BCrypt.Net;
-using Org.BouncyCastle.Crypto.Generators;
+using CST_326TempoTunes.Security;   // <-- PasswordHasher lives here
 
 namespace CST_326TempoTunes.Controllers
 {
@@ -17,34 +22,66 @@ namespace CST_326TempoTunes.Controllers
 
         /* ----------  GET /Login  ---------- */
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? returnUrl = null)
         {
+            ViewData["BodyClass"] = "login-background";
+            ViewData["ReturnUrl"] = returnUrl;  // so the view can keep it in a hidden field
             return View(new LoginViewModel());
         }
 
-        ///* ----------  POST /Login  ---------- */
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Index(LoginViewModel vm)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Please provide both username and password.");
-        //        return View(vm);
-        //    }
+        /* ----------  POST /Login  ---------- */
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(LoginViewModel vm, string? returnUrl = null)
+        {
+            ViewData["BodyClass"] = "login-background";
+            ViewData["ReturnUrl"] = returnUrl;
 
-        //    var user = _users.GetUserByUsername(vm.Username);
+            if (!ModelState.IsValid)
+                return View(vm);
 
-        //    if (user is null || !BCrypt.Net.BCrypt.Verify(vm.Password, user.Password))
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Invalid username or password.");
-        //        return View(vm);
-        //    }
+            var user = _users.GetUserByUsername(vm.Username);
+            bool ok = user != null && PasswordHasher.Verify(vm.Password, user.Password);
+            if (!ok)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid username or password.");
+                return View(vm);
+            }
 
-        //    // ***** Login success *****
-        //    // TODO: create auth cookie / claims identity here.
-        //    TempData["LoginMessage"] = $"Welcome, {user.Username}!";
-        //    return RedirectToAction("Index", "Home");   // or wherever you want to land
-        //}
+            /* ----------  Build authentication cookie  ---------- */
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("UserId", user.Id.ToString())
+                // add more claims (roles, email, etc.) as needed
+            };
+
+            var identity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = true,                    // remember‑me
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(4)
+                });
+
+            /* ----------  Redirect  ---------- */
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        /* ----------  GET /Logout  ---------- */
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using CST_326TempoTunes.Models;
+using CST_326TempoTunes.Security;          // <‑‑ NEW (for PasswordHasher)
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -10,6 +11,7 @@ namespace CST_326TempoTunes.Services.DataAccess
 {
     /// <summary>
     /// Low‑level CRUD operations for the “users” collection.
+    /// Handles auto‑ID generation and password hashing.
     /// </summary>
     public class UserDAO
     {
@@ -22,19 +24,18 @@ namespace CST_326TempoTunes.Services.DataAccess
                 throw new InvalidOperationException("Missing MongoConnection in configuration.");
 
             var settings = MongoClientSettings.FromConnectionString(connString);
-            settings.AllowInsecureTls = true;              // ⚠️ for dev environments only
+            settings.AllowInsecureTls = true;   // dev only; remove for prod
             settings.ServerSelectionTimeout = TimeSpan.FromSeconds(10);
 
             var client = new MongoClient(settings);
-            var db = client.GetDatabase("cst326");
-            users = db.GetCollection<UserModel>("users");
+            var database = client.GetDatabase("cst326");
+            users = database.GetCollection<UserModel>("users");
         }
 
         /* --------------------  READ  -------------------- */
 
         /// <summary>
-        /// Returns the first user whose Username matches (case‑insensitive).  
-        /// Returns null if no match is found.
+        /// Returns the first user whose Username matches (case‑insensitive).
         /// </summary>
         public UserModel? GetUserByUsername(string username)
         {
@@ -45,60 +46,44 @@ namespace CST_326TempoTunes.Services.DataAccess
             return users.Find(filter).FirstOrDefault();
         }
 
-        /// <summary>
-        /// Returns every user in the collection. Useful for admin pages.
-        /// </summary>
         public List<UserModel> ReadAllUsers() =>
             users.Find(FilterDefinition<UserModel>.Empty).ToList();
 
         /* --------------------  CREATE  -------------------- */
 
-        /// <summary>
-        /// Inserts a new user document.  
-        /// Returns true if the insert succeeded.
-        /// </summary>
         public bool CreateUser(UserModel user)
         {
-            // If you rely on an integer Id, generate the next one here.
+            // Application‑level auto‑increment
             if (user.Id == 0)
-            {
                 user.Id = GetNextAppId();
-            }
+
+            // Hash the password if we were given plain text
+            if (!user.Password.StartsWith("$2"))
+                user.Password = PasswordHasher.Hash(user.Password);
 
             users.InsertOne(user);
-            return user.MongoId != null;    // MongoDB generated an _id
+            return user.MongoId != null;    // MongoDB assigned _id
         }
 
         /* --------------------  UPDATE  -------------------- */
 
-        /// <summary>
-        /// Replaces the document that has the same numeric Id.  
-        /// Returns true if a document was modified.
-        /// </summary>
         public bool UpdateUser(UserModel user)
         {
-            var filter = Builders<UserModel>.Filter.Eq(u => u.Id, user.Id);
-            var result = users.ReplaceOne(filter, user);
+            // Re‑hash only when caller passes a fresh plain‑text password
+            if (!user.Password.StartsWith("$2"))
+                user.Password = PasswordHasher.Hash(user.Password);
+
+            var result = users.ReplaceOne(u => u.Id == user.Id, user);
             return result.ModifiedCount > 0;
         }
 
         /* --------------------  DELETE  -------------------- */
 
-        /// <summary>
-        /// Removes the user whose numeric Id matches.  
-        /// Returns true if a document was deleted.
-        /// </summary>
-        public bool DeleteUser(int id)
-        {
-            var result = users.DeleteOne(u => u.Id == id);
-            return result.DeletedCount > 0;
-        }
+        public bool DeleteUser(int id) =>
+            users.DeleteOne(u => u.Id == id).DeletedCount > 0;
 
         /* --------------------  HELPERS  -------------------- */
 
-        /// <summary>
-        /// Simple helper to auto‑increment the application‑level Id.
-        /// </summary>
         private int GetNextAppId()
         {
             var sort = Builders<UserModel>.Sort.Descending(u => u.Id);
