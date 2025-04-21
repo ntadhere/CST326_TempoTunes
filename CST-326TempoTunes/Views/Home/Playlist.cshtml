@@ -1,11 +1,8 @@
 ﻿@model IEnumerable<CST_326TempoTunes.Models.PlaylistModel>
-
 @{
     ViewData["Title"] = "Playlist";
     ViewData["BodyClass"] = "playlist-background";
-
 }
-
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-left mb-3">
     <h1 class="mb-0 text-white">Playlists</h1>
@@ -16,99 +13,50 @@
             <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deletePlaylistModal">Remove playlist</button>
         </div>
     }
-
-
 </div>
 
-<div class="row
-     row-cols-2        <!-- 2 cards on phones (< 768 px)        -->
-            row-cols-md-4     <!-- 4 cards on tablets / iPad (≥ 768 px) -->
-            row-cols-lg-6     <!-- 6 cards on laptops / desktop (≥ 992 px) -->
-            g-4">
+<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
     @foreach (var playlist in Model)
     {
-            <div class="col">
-                <div class="card custom-card">
-                    <a asp-controller="Home"
-                       asp-action="OnePlaylist"
-                       asp-route-id="@playlist.Id"
-                       class="text-decoration-none">
-                        <img src="@playlist.ImageUrl" class="card-img-top" alt="@playlist.Name">
-                        <div class="card-body">
-                            <h5 class="card-title">@playlist.Name</h5>
-                            <p class="card-text">@playlist.ArtistName</p>
-                        </div>
-                    </a>
-                </div>
+        <div class="col">
+            <div class="card custom-card position-relative">
+                <a asp-controller="Home"
+                   asp-action="OnePlaylist"
+                   asp-route-id="@playlist.Id"
+                   class="text-decoration-none">
+                    <img src="@playlist.ImageUrl" class="card-img-top" alt="@playlist.Name" />
+                    <div class="card-body">
+                        <h5 class="card-title">@playlist.Name</h5>
+                        <p class="card-text">@playlist.ArtistName</p>
+                    </div>
+                </a>
+
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <button type="button"
+                            class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editPlaylistModal-@playlist.Id">
+                        Edit
+                    </button>
+                }
             </div>
+        </div>
     }
 </div>
 
 @if (User.Identity?.IsAuthenticated ?? false)
 {
-<div class="modal fade" id="deletePlaylistModal" tabindex="-1"
-     aria-labelledby="deletePlaylistModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal-style">
-
-            <div class="modal-header">
-                <h2 class="modal-title w-100 text-center" id="deletePlaylistModalLabel">
-                    Delete
-                </h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body">
-                <form asp-action="RemovePlaylist"
-                      asp-controller="Home"
-                      method="post"
-                      class="d-flex flex-column gap-3">
-
-                    <div>
-                        <label for="playlistId" class="form-label" style="color: #fff;">
-                            Playlist name
-                        </label>
-                        <select name="id" class="form-select" id="playlistId">
-                            @foreach (var p in Model)
-                            {
-                                <option value="@p.Id">@p.Name</option>
-                            }
-                        </select>
-                    </div>
-
-=                    <div class="text-end">
-                        <button type="submit" class="btn btn-pink">
-                            Done
-                        </button>
-                        <button type="button" class="btn" data-bs-dismiss="modal">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-}
-
-<!-- Add Playlist Modal -->
-@if (User.Identity?.IsAuthenticated ?? false)
-{
-    <div class="modal fade" id="addPlaylistModal" tabindex="-1"
-         aria-labelledby="addPlaylistModalLabel" aria-hidden="true">
+    <!-- Add Playlist Modal -->
+    <div class="modal fade" id="addPlaylistModal" tabindex="-1" aria-labelledby="addPlaylistModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-style">
                 <div class="modal-header">
-                    <h2 class="modal-title w-100 text-center" id="addPlaylistModalLabel">
-                        Add Playlist
-                    </h2>
+                    <h2 class="modal-title w-100 text-center" id="addPlaylistModalLabel">Add Playlist</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form asp-action="AddPlaylist"
-                          asp-controller="Home"
-                          method="post"
-                          class="d-flex flex-column gap-3">
+                    <form asp-action="AddPlaylist" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
                         <input type="text" name="Name" class="form-control" placeholder="Playlist Name" required />
                         <input type="text" name="ArtistName" class="form-control" placeholder="Artist Name" required />
                         <input type="text" name="ImageUrl" class="form-control" placeholder="Image URL" required />
@@ -121,10 +69,60 @@
             </div>
         </div>
     </div>
+
+    <!-- Remove Playlist Modal -->
+    <div class="modal fade" id="deletePlaylistModal" tabindex="-1" aria-labelledby="deletePlaylistModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal-style">
+                <div class="modal-header">
+                    <h2 class="modal-title w-100 text-center" id="deletePlaylistModalLabel">Delete Playlist</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="RemovePlaylist" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                        <label for="playlistId" class="form-label text-white">Select Playlist</label>
+                        <select id="playlistId" name="id" class="form-select">
+                            @foreach (var p in Model)
+                            {
+                                <option value="@p.Id">@p.Name</option>
+                            }
+                        </select>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-pink">Delete</button>
+                            <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Playlist Modals -->
+    @foreach (var p in Model)
+    {
+        <div class="modal fade" id="editPlaylistModal-@p.Id" tabindex="-1" aria-labelledby="editPlaylistModalLabel-@p.Id" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content custom-modal-style">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPlaylistModalLabel-@p.Id">Edit Playlist</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form asp-action="EditPlaylist" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                            <input type="hidden" name="Id" value="@p.Id" />
+                            <input type="text" name="Name" value="@p.Name" class="form-control" placeholder="Playlist Name" required />
+                            <input type="text" name="ArtistName" value="@p.ArtistName" class="form-control" placeholder="Artist Name" required />
+                            <input type="text" name="ImageUrl" value="@p.ImageUrl" class="form-control" placeholder="Image URL" required />
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-pink">Save</button>
+                                <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
-<img src="/lib/img/list_of_playlist.png"
-     alt="Decorative playlist footer"
-     class="sticky-footer-image" />
-
-
+<img src="/lib/img/list_of_playlist.png" alt="Decorative playlist footer" class="sticky-footer-image" />

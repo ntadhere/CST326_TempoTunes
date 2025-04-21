@@ -81,5 +81,25 @@ namespace CST_326TempoTunes.Services.DataAccess
             tracks.InsertOne(track);
             return track.Id != 0;
         }
+        /// <summary>
+        /// Updates an existing playlist document by numeric Id.
+        /// </summary>
+        public bool UpdatePlaylist(PlaylistModel playlist)
+        {
+            var filter = Builders<PlaylistModel>.Filter.Eq(p => p.Id, playlist.Id);
+            var result = playlists.ReplaceOne(filter, playlist);
+            return result.ModifiedCount > 0;
+        }
+
+        /// <summary>
+        /// Updates an existing track document by numeric Id.
+        /// </summary>
+        public bool UpdateTrack(TrackModel track)
+        {
+            var filter = Builders<TrackModel>.Filter.Eq(t => t.Id, track.Id);
+            var result = tracks.ReplaceOne(filter, track);
+            return result.ModifiedCount > 0;
+        }
+
     }
 }

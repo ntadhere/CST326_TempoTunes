@@ -20,6 +20,9 @@ namespace CST_326TempoTunes.Services.Business
         public bool RemoveTrack(int id) => dao.RemoveTrack(id);
         public bool AddPlaylist(PlaylistModel m) => dao.AddPlaylist(m);
         public bool AddTrack(TrackModel t, int pid) => dao.AddTrack(t, pid);
+        public bool UpdatePlaylist(PlaylistModel m) => dao.UpdatePlaylist(m);
+        public bool UpdateTrack(TrackModel t) => dao.UpdateTrack(t);
+
     }
 
 }
