@@ -5,6 +5,9 @@
     ViewData["BodyClass"] = "onePlaylist-background";
 }
 
+<p class="text-white small">Authenticated? @User.Identity?.IsAuthenticated</p>
+
+
 <div class="d-flex flex-column flex-md-row align-items-md-end gap-3 mb-3">
     <!-- 1) Image -->
     <img src="@Model.ImageUrl"
@@ -19,18 +22,18 @@
     </div>
 
     <!-- 3) Button group -->
-    <div class="flex-shrink-0">
-        <button type="button"
-                class="btn btn-pink w-100 w-md-auto"
-                data-bs-toggle="modal"
-                data-bs-target="#addTrackModal">
-            Add Track
-        </button>
-    </div>
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <div class="flex-shrink-0">
+            <button type="button"
+                    class="btn btn-pink w-100 w-md-auto"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addTrackModal">
+                Add Track
+            </button>
+        </div>
+    }
 </div>
-
-
-
 
 <h2 class="text-white">Track List</h2>
 
@@ -49,17 +52,18 @@
             {
                 <tr>
                     <td>@track.Id</td>
-
                     <td>@track.Name</td>
                     <td>@track.Artist</td>
                     <td>@track.Duration</td>
                     <td>
-                        <!-- Inline Remove Track Form -->
-                        <form asp-action="RemoveTrack" asp-controller="Home" method="post" style="display:inline;">
-                            <input type="hidden" name="trackId" value="@track.Id" />
-                            <input type="hidden" name="playlistId" value="@Model.Id" />
-                            <button type="submit" class="btn btn-sm">Remove</button>
-                        </form>
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            <form asp-action="RemoveTrack" asp-controller="Home" method="post" style="display:inline;">
+                                <input type="hidden" name="trackId" value="@track.Id" />
+                                <input type="hidden" name="playlistId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-sm">Remove</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }
@@ -68,30 +72,33 @@
 </div>
 
 <!-- Add Track Modal -->
-<div class="modal fade" id="addTrackModal" tabindex="-1" aria-labelledby="addTrackModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal-style">
-            <div class="modal-header">
-                <h2 class="modal-title w-100 text-center" id="addTrackModalLabel" style="color: #ffd44f; font-weight:bold;">
-                    Add Track
-                </h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form asp-action="AddTrack" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
-                    <input type="text" name="Name" class="form-control" placeholder="Track Name" required />
-                    <input type="text" name="Artist" class="form-control" placeholder="Artist Name" required />
-                    <input type="text" name="Duration" class="form-control" placeholder="Duration (e.g. 3:45)" required />
-                    <input type="hidden" name="playlistId" value="@Model.Id" />
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-pink">Add</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <div class="modal fade" id="addTrackModal" tabindex="-1" aria-labelledby="addTrackModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal-style">
+                <div class="modal-header">
+                    <h2 class="modal-title w-100 text-center" id="addTrackModalLabel" style="color: #ffd44f; font-weight:bold;">
+                        Add Track
+                    </h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="AddTrack" asp-controller="Home" method="post" class="d-flex flex-column gap-3">
+                        <input type="text" name="Name" class="form-control" placeholder="Track Name" required />
+                        <input type="text" name="Artist" class="form-control" placeholder="Artist Name" required />
+                        <input type="text" name="Duration" class="form-control" placeholder="Duration (e.g. 3:45)" required />
+                        <input type="hidden" name="playlistId" value="@Model.Id" />
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-pink">Add</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
 
 <!-- Sticky Footer Image -->
 <img src="/lib/img/onePlaylist.png"

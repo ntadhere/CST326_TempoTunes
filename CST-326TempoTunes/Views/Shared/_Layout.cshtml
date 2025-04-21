@@ -57,13 +57,20 @@
                         var onLoginPage = currentCtrl.Equals("Login", StringComparison.OrdinalIgnoreCase)
                         && currentAct.Equals("Index", StringComparison.OrdinalIgnoreCase);
                     }
-                    @if (!onLoginPage)
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <form asp-controller="Login" asp-action="Logout" method="post" class="d-inline ms-lg-2">
+                            <button type="submit" class="btn btn-outline-light">Logout</button>
+                        </form>
+                    }
+                    else if (!onLoginPage)
                     {
                         <a class="btn btn-pink ms-lg-2"
                            asp-controller="Login" asp-action="Index">
                             Login
                         </a>
                     }
+
                 </div>
             </div>
         </nav>
