@@ -59,7 +59,8 @@
                         {
                             <button class="btn btn-sm btn-outline-light me-2"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#editTrackModal-@track.Id">
+                                    data-bs-target="#editTrackModal-@track.Id" 
+                                    style="background-color: #ffdb06; color: black;">
                                 Edit
                             </button>
                             <form asp-action="RemoveTrack"
@@ -114,7 +115,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-style">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Playlist</h5>
+                    <h2 class="modal-title">Edit Playlist</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -144,7 +145,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content custom-modal-style">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Track</h5>
+                        <h2 class="modal-title">Edit Track</h2>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">

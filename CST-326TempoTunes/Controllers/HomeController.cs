@@ -75,10 +75,15 @@ namespace CST_326TempoTunes.Controllers
         public IActionResult EditPlaylist(PlaylistModel vm)
         {
             if (!ModelState.IsValid)
-                return RedirectToAction("Playlist");  // Or return view with errors
+            {
+                // You might want to pass the id back to the view so it can re?open the modal
+                return RedirectToAction("Playlist");
+            }
 
-            bool ok = _playlistService.UpdatePlaylist(vm);
-            TempData["Message"] = ok ? "Playlist updated." : "Update failed.";
+            bool success = _playlistService.UpdatePlaylist(vm);
+            TempData["Message"] = success
+                ? "Playlist successfully updated."
+                : "Failed to update playlist.";
             return RedirectToAction("Playlist");
         }
 

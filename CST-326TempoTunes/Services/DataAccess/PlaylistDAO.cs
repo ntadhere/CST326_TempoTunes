@@ -81,15 +81,19 @@ namespace CST_326TempoTunes.Services.DataAccess
             return track.Id != 0;
         }
 
-        // 10. Update playlist
         public bool UpdatePlaylist(PlaylistModel playlist)
         {
             var filter = Builders<PlaylistModel>.Filter.Eq(p => p.Id, playlist.Id);
-            var result = playlists.ReplaceOne(filter, playlist);
+
+            var update = Builders<PlaylistModel>.Update
+                .Set(p => p.Name, playlist.Name)
+                .Set(p => p.ArtistName, playlist.ArtistName)
+                .Set(p => p.ImageUrl, playlist.ImageUrl);
+
+            var result = playlists.UpdateOne(filter, update);
             return result.ModifiedCount > 0;
         }
 
-        // 11. Update track
         public bool UpdateTrack(TrackModel track)
         {
             var filter = Builders<TrackModel>.Filter.Eq(t => t.Id, track.Id);

@@ -31,28 +31,32 @@
     @foreach (var playlist in Model)
     {
         <div class="col">
-            <div class="card custom-card position-relative">
+            <div class="card custom-card">
                 <a asp-controller="Home"
                    asp-action="OnePlaylist"
                    asp-route-id="@playlist.Id"
                    class="text-decoration-none">
                     <img src="@playlist.ImageUrl"
                          class="card-img-top"
-                         alt="@playlist.Name">
+                         alt="@playlist.Name" />
                     <div class="card-body">
                         <h5 class="card-title">@playlist.Name</h5>
                         <p class="card-text">@playlist.ArtistName</p>
                     </div>
                 </a>
 
+                @* Edit button moved below the card body *@
                 @if (User.Identity?.IsAuthenticated ?? false)
                 {
-                    <button type="button"
-                            class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editPlaylistModal-@playlist.Id">
-                        Edit
-                    </button>
+                    <div class="text-center mb-3">
+                        <button type="button"
+                                class="btn"
+                                style="background-color: #ffdb06; color: black;"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editPlaylistModal-@playlist.Id">
+                            Edit
+                        </button>
+                    </div>
                 }
             </div>
         </div>
@@ -125,26 +129,26 @@
         <div class="modal fade" id="editPlaylistModal-@p.Id" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content custom-modal-style">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Playlist</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form asp-action="EditPlaylist"
-                              asp-controller="Home"
-                              method="post"
-                              class="d-flex flex-column gap-3">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="Id" value="@p.Id" />
+                    <form asp-action="EditPlaylist"
+                          asp-controller="Home"
+                          method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" value="@p.Id" />
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Playlist</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body d-flex flex-column gap-3">
                             <input type="text" name="Name" value="@p.Name" class="form-control" placeholder="Playlist Name" required />
                             <input type="text" name="ArtistName" value="@p.ArtistName" class="form-control" placeholder="Artist Name" required />
                             <input type="text" name="ImageUrl" value="@p.ImageUrl" class="form-control" placeholder="Image URL" required />
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-pink">Save</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-pink">Save</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
